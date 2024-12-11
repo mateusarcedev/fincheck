@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BankAccounttype {
+  CHECKING
+  INVESTMENT
+  CASH
+}
+
+model User {
+  id          String        @id @default(uuid()) @db.Uuid
+  name        String
+  email       String        @unique
+  password    String
+  BankAccount BankAccount[]
+
+  @@map("users")
+}
+
+model BankAccount {
+  id             String          @id @default(uuid()) @db.Uuid
+  userId         String          @map("user_id") @db.Uuid
+  name           String
+  initialBalance Float           @map("initial_balance")
+  type           BankAccounttype @map("bank_account_type")
+  color          String
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("bank_accounts")
+}
